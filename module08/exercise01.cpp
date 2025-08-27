@@ -31,18 +31,18 @@ void gun(int fetch_size) {
 
 int main() {
     {
-        jthread t1{fun, 1, 200'000};
-        jthread t2{fun, 200'001, 400'000};
-        jthread t11{fun, 400'001, 600'000};
-        jthread t12{fun, 600'001, 800'000};
-        jthread t3{gun, 100'000};
-        jthread t4{gun, 100'000};
-        jthread t5{gun, 100'000};
-        jthread t6{gun, 100'000};
-        jthread t7{gun, 100'000};
-        jthread t8{gun, 100'000};
-        jthread t9{gun, 100'000};
-        jthread t10{gun, 100'000};
+        jthread t1{fun, 1, 2'000'000};
+        jthread t2{fun, 2'000'001, 4'000'000};
+        jthread t11{fun, 4'000'001, 6'000'000};
+        jthread t12{fun, 6'000'001, 8'000'000};
+        jthread t3{gun, 1'000'000};
+        jthread t4{gun, 1'000'000};
+        jthread t5{gun, 1'000'000};
+        jthread t6{gun, 1'000'000};
+        jthread t7{gun, 1'000'000};
+        jthread t8{gun, 1'000'000};
+        jthread t9{gun, 1'000'000};
+        jthread t10{gun, 1'000'000};
     }
     cerr << "queue size is " << state.size() << endl;
     cerr << "queue status is " << (state.empty() ? "empty" : "not empty") << endl;
