@@ -3,35 +3,40 @@
 #include <thread>
 #include <semaphore>
 #include <chrono>
-#include <numeric>
-#include <future>
+#include <mutex>
 
 using namespace std;
 
-binary_semaphore signaling{0};
+counting_semaphore<1> vehicle{20};
+mutex m;
 
-vector<int> nums{};
-
-void prepare_data(){
-    cout << "preparing data..." << flush;
-    nums.insert(nums.end(),{4,8,15,16,23,42});
-    this_thread::sleep_for(5s);
-    cout << "done" << endl << flush;
-    signaling.release();
+void moving(int no) {
+    vehicle.acquire();
+    {
+        lock_guard<mutex> lg(m);
+        cerr << "The passenger (" << no << ") gets on the vehicle." << endl;
+    }
+    this_thread::sleep_for(3s);
+    vehicle.release();
+    {
+        lock_guard<mutex> lg(m);
+        cerr << "The passenger (" << no << ") leaves the vehicle." << endl;
+    }
 }
 
-int process_data(){
-    cout << "waiting for data..." << flush;
-    signaling.acquire(); // blocked
-    cout << "done" << endl << flush;
-    return accumulate(nums.begin(),nums.end(),int());
-}
-
-int main(){
-    cout << "Application is just started..." << endl << flush;
-    thread t1(prepare_data);
-    auto total = async(process_data);
-    cout << "Sum is " << total.get() << endl << flush;
-    t1.join();
+int main() {
+    cerr << "Application is just started..." << endl;
+    vector<thread> passengers{};
+    for (int i = 1; i <= 100; ++i) {
+        passengers.push_back(thread(moving, i));
+    }
+    {
+        lock_guard<mutex> lg(m);
+        cerr << "All threads are created!" << endl;
+    }
+    for (auto &t: passengers) {
+        t.join();
+    }
+    cerr << "Application is done." << endl;
     return 0;
 }
